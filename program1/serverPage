@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Date: Tue, 24 Oct 2023 19:17:25 GMT
+Expires: -1
+Cache-Control: private, max-age=0
+Content-Type: text/html; charset=ISO-8859-1
+Content-Security-Policy-Report-Only: object-src 'none';base-uri 'self';script-src 'nonce-vYg77AXL8fMqh3hcmQcdyA' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp
+P3P: CP="This is not a P3P policy! See g.co/p3phelp for more info."
+Server: gws
+X-XSS-Protection: 0
+X-Frame-Options: SAMEORIGIN
+Set-Cookie: 1P_JAR=2023-10-24-19; expires=Thu, 23-Nov-2023 19:17:25 GMT; path=/; domain=.google.com; Secure
+Set-Cookie: AEC=Ackid1SMGoDHU75gajSl1N5_Dpvq48rb4DhxGhwowIYTLieyhUeVjcVEGg; expires=Sun, 21-Apr-2024 19:17:25 GMT; path=/; domain=.google.com; Secure; HttpOnly; SameSite=lax
+Set-Cookie: NID=511=VQU_xzoxg_BvSDTmGLuYinp8nfGRuIOTu1WOr_Qy3WODfmz1cQwdmO1PzybEAFRumv3UbZj12jCxtCpypnWNw3GE3GjP6Uu5zdTDYxH1F1jt1k2VNZMlg0K0rCZRgn0M6eQjfMWDxgiGryUqB7YwWdSEl2Got6zPhYBfqD7g6GQ; expires=Wed, 24-Apr-2024 19:17:25 GMT; path=/; domain=.google.com; HttpOnly
+Accept-Ranges: none
+Vary: Accept-Encoding
+Transfer-Encoding: chunked
+
+39c4
+<!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="en"><head><meta content="Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for." name="description"><meta content="noodp" name="robots"><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"><meta content="/images/branding/googleg/1x/googleg_standard_color_128dp.png" itemprop="image"><title>Google</title><script nonce="YoBSM-TQ8mmoLXOF2jx99w">(function(){var _g={kEI:'2Bc4ZYiRF-Xz9APd4KagCQ',kEXPI:'0,1356780,8687,207,2415,2389,2316,383,246,5,1129120,1197788,380702,16112,28687,22430,1362,12319,17580,4998,17075,38444,887,1985,2891,3926,7828,606,29877,20181,10631,2615,12710,781,1244,1,16916,2652,4,32894,24508,5195,1457,22607,6630,7596,1,11943,30217,2,16389,342,3534,19490,5679,1021,31122,4567,6259,23417,1250,33067,2,2,1,26632,8155,8861,14490,873,7829,11804,7,1355,567,9779,8213,34246,3142,17057,1340,18796,14,82,13247,1,3266,3692,109,2412,5856,8051,10909,2305,3098,781,2249,5629,10187,1804,7734,8334,6769,2995,9460,11790,1633,8841,5604,3691,8564,7769,146,7653,1194,548,12351,5209125,303,711,2,195,384,5992526,1860,97,2806428,141,795,29238,16,21,38,6,5,8,206,3,41,23,15,7,23,51,23940867,4044106,16672,42667,1216,3,2109,3,1165,4,1267,540,1390966,23759270,7954,1,208,4636,8409,2879,334,1260,3554,577,4917,2403,2,739,4246,3101,3781,6322,872,1,1,2,3,6580,3117,1775,2224,1879,53,1997,1186,302,7054,1,2177,313,420,1103,1484,145,1247,3,3363,2539,1718,2,2063,3459,3913,455,172,1897,2200,542,1,1,2,3,249,808,631,2052,27,6,5,15,49,262,546,7,1,8,1554,4,49,975,873,1,14,1006,1328,882,259,353,35,1207,1571,306,746,789,412,454,332,11,1,1305,666,51,178,41,2,47,802,1,241,87,1,705,898,3,2,97,299,139,82,1,104,220,242,245,134,750,2,389,77,107,448,1121,319,405,6,2,1,198,148,5,321,1,350,617,240,350,1,150,1,210,118,109,731,497,611,539,2,833,52,11,505,509,126,149,54,777,100,520,930,24,119,4,11,230,64,220,153,119,470,353,50,27,12,601,618,923,472,226,31,176,160,90,516,7,10,2,501,502,25,269,31,272,368,102,226,8,710,58,3,439,7,1,8,568,153,410,3,700,4,2525,201,3',kBL:'yEhX',kOPI:89978449};(function(){var a;(null==(a=window.google)?0:a.stvsc)?google.kEI=_g.kEI:window.google=_g;}).call(this);})();(function(){google.sn='webhp';google.kHL='en';})();(function(){
+var h=this||self;function l(){return void 0!==window.google&&void 0!==window.google.kOPI&&0!==window.google.kOPI?window.google.kOPI:null};var m,n=[];function p(a){for(var b;a&&(!a.getAttribute||!(b=a.getAttribute("eid")));)a=a.parentNode;return b||m}function q(a){for(var b=null;a&&(!a.getAttribute||!(b=a.getAttribute("leid")));)a=a.parentNode;return b}function r(a){/^http:/i.test(a)&&"https:"===window.location.protocol&&(google.ml&&google.ml(Error("a"),!1,{src:a,glmm:1}),a="");return a}
+function t(a,b,c,d,k){var e="";-1===b.search("&ei=")&&(e="&ei="+p(d),-1===b.search("&lei=")&&(d=q(d))&&(e+="&lei="+d));d="";var g=-1===b.search("&cshid=")&&"slh"!==a,f=[];f.push(["zx",Date.now().toString()]);h.
