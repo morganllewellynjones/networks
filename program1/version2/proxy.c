@@ -5,12 +5,22 @@
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-#include "server.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <fcntl.h>
 
-static volatile bool interrupted = false;
+#include "server.h"
+#include "http.h"
+#include "io.h"
+
+#define BUFFSIZE 8192
+
+static volatile bool sigint = false;
 
 void sigint_handle(int) {
-	interrupted = true;
+	fprintf(stdout, "\nsigint received!\n");
+	sigint = true;
 }
 
 void register_sigint() {
@@ -27,33 +37,41 @@ void register_sigint() {
 	 void *(*start_routine)(void *),
 	 void *restrict arg);
 	 */
+/*
+	 void* acceptConnections(void* args)
+	 {
+	 struct server Host = *(struct server*)args;
+	 struct client Client = acceptClient(Host);
+	 char buffer[8192];
+	 memset(buffer, 0, sizeof(buffer));
+	 size_t msgLength = read(Client.fd, buffer, sizeof(buffer));
+	 fprintf(stdout, "%s\n", buffer);
+	 return (void*)0;
+	 }
+	 */
 
-void* acceptConnections(void* args)
-{
-	struct server Host = *(struct server*)args;
-	struct client Client = acceptClient(Host);
-	char buffer[8192];
-	memset(buffer, 0, sizeof(buffer));
-	size_t msgLength = read(Client.fd, buffer, sizeof(buffer));
-	fprintf(stdout, "%s\n", buffer);
-	return (void*)0;
-}
-
-void* fetchFile(void* args)
-{
-	struct server Host = *(struct server*)args;
-}
+/*
+	 void* fetchFile(void* args)
+	 {
+	 struct server Host = *(struct server*)args;
+	 }
+	 */
 
 int main()
 {
 	register_sigint();
 
 	//creates socket, binds and listens
-	struct server Host = initServer(8080);
-	//struct client Client = acceptClient(Host);
+	struct Host proxy = initServer(8080);
+	struct Host client = acceptClient(proxy);
+	//char buffer[BUFFSIZE];
+	//memset(buffer, 0, sizeof(buffer));
+	//read(Client.fd, buffer, sizeof(buffer));
+	if (!cacheFile("request.http", client.fd)) {
+		return EXIT_FAILURE;
+	}
+	//struct Http httpRequest = http_construct(buffer);
+	//fprintf(stdout, httpRequest.msg);
 
-	pthread_t clientThread;
-	pthread_create(&clientThread, NULL, acceptConnections, &Host);
-	pthread_join(clientThread, NULL);
-	return 0;
+	return EXIT_SUCCESS;
 }

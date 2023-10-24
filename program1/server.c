@@ -168,7 +168,9 @@ int main(int argc, char** argv)
 			exit(EXIT_FAILURE);
 		}
 
-		char serverRequest[] = "GET / HTTP/1.1\r\nHost: www.google.com\r\nConnection: close\r\n\r\n";
+		//		char serverRequest[] = "GET / HTTP/1.1\r\nHost: www.google.com\r\nAccept: */*\r\nConnection: close\r\nUser-Agent:"
+		//		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0\r\n\r\n";
+		char serverRequest[] = "GET / HTTP/1.1\r\nAccept: */*\r\nConnection: close\r\n\r\n";
 		size_t bytesToServer = write(socketfd, serverRequest, strlen(serverRequest));
 		fprintf(stdout, "Wrote %ld bytes to server\n", bytesToServer);
 		char buffer[BUFF_SIZE];
