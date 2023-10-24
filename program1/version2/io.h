@@ -10,6 +10,6 @@
 
 char* concat(char* string1, char* string2);
 bool cacheFile(char* filename, int fd);
-bool readToSocket(char* filename, int socketfd);
+size_t writeToSocket(char* filename, int socketfd);
 
 #endif

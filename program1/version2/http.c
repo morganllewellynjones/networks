@@ -55,6 +55,10 @@ struct HttpHeader* getHeader(struct Http http, char* key)
 bool removeHeader(struct Http* http, char* key)
 {
 	struct HttpHeader* headerToRemove = getHeader(*http, key);
+	if (headerToRemove == NULL)
+	{
+		return NULL;
+	}
 	//Only header
 	if (headerToRemove->next == NULL)
 	{
@@ -81,4 +85,12 @@ char* getHeaderValue(struct Http http, char* key)
 {
 	struct HttpHeader* Header = getHeader(http, key);
 	return (Header != NULL) ? strdup(Header->value) : NULL;
+}
+
+struct HttpHeader* modifyHeaderValue(struct Http* http, char* key, char* insert)
+{
+	struct HttpHeader* Header = getHeader(http, key);
+	free(Header->value);
+	Header->value = insert;
+	return Header;
 }

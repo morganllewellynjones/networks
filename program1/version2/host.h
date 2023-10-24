@@ -2,6 +2,10 @@
 #define SERVER_H
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
 
 struct Host {
 	int fd;
@@ -11,5 +15,6 @@ struct Host {
 
 struct Host acceptClient(struct Host host);
 struct Host initServer(short port);
+int connectToServer(char* hostName, char* service);
 
 #endif

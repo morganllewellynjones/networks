@@ -44,4 +44,5 @@ char* getHeaderValue(struct Http http, char* key);
 char* buildhttpString(struct Http http);
 struct HttpHeader* getHeader(struct Http http, char* key);
 bool removeHeader(struct Http* http, char* key);
+struct HttpHeader* modifyHeaderValue(struct Http* http, char* key, char* insert);
 #endif

@@ -1,5 +1,5 @@
-GET /google.com HTTP/1.1
-Connection: closed
+GET / HTTP/1.1
+Connection: close
 Pragma: no-cache
 Cache-Control: no-cache
 sec-ch-ua: "Chromium";v="118", "Google Chrome";v="118", "Not=A?Brand";v="99"

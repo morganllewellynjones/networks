@@ -31,21 +31,25 @@ bool cacheFile(char* filename, int fd)
 	return true;
 }
 
-bool readToSocket(char* filename, int socketfd)
+size_t writeToSocket(char* filename, int socketfd)
 {
-	int fd = open(filename, O_RDONLY);
+	int fd = open(filename, 0);
 	if (fd < 0) {
-		perror("(failed to open disk file)");
-		return false;
+		perror("{failed to open disk file)");
+		exit(EXIT_FAILURE);
 	}
 	char buffer[4096];
 	memset(buffer, 0, sizeof(buffer));
 	size_t bytes = 0;
+	size_t written = 0;
+	size_t accum = 0;
 	while ((bytes = read(fd, buffer, sizeof(buffer)-1)) > 0)
 	{
-		write(socketfd, buffer, bytes);
+		if ((written = write(socketfd, buffer, bytes)) < 0) {
+			perror("(writing to socket)");
+		}
 		memset(buffer, 0, bytes);
+		accum += written;
 	}
-	close(fd);
-	return true;
+	return accum;
 }

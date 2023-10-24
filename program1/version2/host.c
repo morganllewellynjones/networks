@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <sys/socket.h>
 #include <stdlib.h>
-#include "server.h"
+#include "host.h"
 
 struct Host acceptClient(struct Host host) {
 	struct sockaddr_in clientAddr;
@@ -20,7 +20,42 @@ struct Host acceptClient(struct Host host) {
 	return client;
 }
 
+int connectToServer(char* hostname, char* service)
+{
+	struct addrinfo hints;
+	struct addrinfo* serverAddresses;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 */
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = 0;
+	hints.ai_protocol = 0;          /* Any protocol */
+	//const short httpport = htons(30);
+	int error = getaddrinfo(hostname, service, &hints, &serverAddresses);
+	if (error != 0) {
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
+	}
+	struct addrinfo* currAddr;
+	int socketfd = -1;
+	for (currAddr = serverAddresses; currAddr != NULL; currAddr = currAddr->ai_next)
+	{
+		socketfd = socket(currAddr->ai_family, currAddr->ai_socktype,
+				currAddr->ai_protocol);
+		if (socketfd == -1) {continue;}
+		if (connect(socketfd, currAddr->ai_addr, currAddr->ai_addrlen) != -1) {
+			break;                  /* Success */
+		}
 
+		close(socketfd);
+	}
+
+	freeaddrinfo(serverAddresses);           /* No longer needed */
+
+	if (currAddr == NULL) {               /* No address succeeded */
+		perror("(could not connect to server\n)");
+		exit(EXIT_FAILURE);
+	}
+	return socketfd;
+}
 
 struct Host initServer(short port) {
 

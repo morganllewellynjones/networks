@@ -10,7 +10,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 
-#include "server.h"
+#include "host.h"
 #include "http.h"
 #include "io.h"
 
@@ -64,12 +64,15 @@ int main()
 	//creates socket, binds and listens
 	struct Host proxy = initServer(8080);
 	struct Host client = acceptClient(proxy);
+	int serverfd = connectToServer("google.com", "80");
 	//char buffer[BUFFSIZE];
 	//memset(buffer, 0, sizeof(buffer));
 	//read(Client.fd, buffer, sizeof(buffer));
-	if (!cacheFile("request.http", client.fd)) {
+	writeToSocket("custom.http", serverfd);
+	if (!cacheFile("response.http", serverfd)) {
 		return EXIT_FAILURE;
 	}
+	writeToSocket("response.http", client.fd);
 	//struct Http httpRequest = http_construct(buffer);
 	//fprintf(stdout, httpRequest.msg);
 
