@@ -42,7 +42,6 @@ void* acceptConnections(void* args)
 void* fetchFile(void* args)
 {
 	struct server Host = *(struct server*)args;
-
 }
 
 int main()

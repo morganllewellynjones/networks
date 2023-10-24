@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#define BUFF_SIZE 128000
+#define BUFF_SIZE 4096
 
 static volatile sig_atomic_t keepRunning = 1;
 
@@ -27,38 +27,27 @@ void interruptHandler(int blank) {
 	keepRunning = 0;
 }
 
-void* fetchRequest(void* args) {
+char* readFile(int fd) {
+	const off_t fileSize = lseek(fd, 0, SEEK_END);
+	lseek(fd, 0, SEEK_SET);
+	char* buffer = malloc(fileSize + 1);
+	read(fd, buffer, fileSize);
+	buffer[fileSize] = 0;
+	return buffer;
+}
 
-	char buffer[BUFF_SIZE];
-	int tempfd = open("serverPage", O_RDWR | O_CREAT, 0666);
-	size_t responseLen = 0;
-	while (responseLen = read(socketfd, buffer, sizeof(buffer));
-			size_t bytesRead = read(socketfd, buffer, sizeof(buffer));
-			write(tempfd, buffer, bytesRead);
-
-			}
-
-			char* readFile(int fd) {
-			const off_t fileSize = lseek(fd, 0, SEEK_END);
-			lseek(fd, 0, SEEK_SET);
-			char* buffer = malloc(fileSize + 1);
-			read(fd, buffer, fileSize);
-			buffer[fileSize] = 0;
-			return buffer;
-			}
-
-			size_t getLineSize(char* string) {
-			char* p = NULL;
-			size_t lineSize = 0;
-			for (p = string; *p != 0; ++p)
-			{
-			++lineSize;
-			if (*p == '\n') {
-				break;
-			}
-			}
-			return lineSize;
-			}
+size_t getLineSize(char* string) {
+	char* p = NULL;
+	size_t lineSize = 0;
+	for (p = string; *p != 0; ++p)
+	{
+		++lineSize;
+		if (*p == '\n') {
+			break;
+		}
+	}
+	return lineSize;
+}
 
 char* readLine(char* string) {
 	size_t index;
@@ -179,12 +168,17 @@ int main(int argc, char** argv)
 			exit(EXIT_FAILURE);
 		}
 
-		char serverRequest[] = "GET / HTTP/1.1\r\nHost: www.google.com\r\n\r\n";
+		char serverRequest[] = "GET / HTTP/1.1\r\nHost: www.google.com\r\nConnection: close\r\n\r\n";
 		size_t bytesToServer = write(socketfd, serverRequest, strlen(serverRequest));
 		fprintf(stdout, "Wrote %ld bytes to server\n", bytesToServer);
 		char buffer[BUFF_SIZE];
-		pthread_t fetchThread;
-		pthread_create(&fetchThread, NULL, fetchRequest, socketfd);
+		int tempfd = open("serverPage", O_RDWR | O_CREAT, 0666);
+		size_t responseLen = 0;
+		while ((responseLen = read(socketfd, buffer, BUFF_SIZE-1)) > 0) {
+			if (keepRunning == 0) break;
+			write(tempfd, buffer, responseLen);
+			memset(buffer, 0, responseLen);
+		}
 		/*
 			 while (((bytesRead = read(socketfd, buffer, sizeof(buffer))) > 0)) {
 			 if (keepRunning == 0) break;

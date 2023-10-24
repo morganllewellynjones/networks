@@ -1,7 +1,8 @@
-#ifndef HTML_H
-#define HTML_H
+#ifndef HTTP_H
+#define HTTP_H
 
-struct html {
+
+struct http {
 	char* text;
 	char* method;
 	char* url;
