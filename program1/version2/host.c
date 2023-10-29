@@ -7,16 +7,21 @@
 #include "host.h"
 
 struct Host acceptClient(struct Host host) {
+
 	struct sockaddr_in clientAddr;
 	memset(&clientAddr, 0, sizeof(clientAddr));
+
 	struct Host client;
 	client.addr = clientAddr;
 	client.addr_len = sizeof(client.addr);
 	client.fd = (accept(host.fd, (struct sockaddr*)&client.addr, &client.addr_len));
+
 	if (client.fd < 0) {
 		perror("(accepting client)");
+		exit(EXIT_FAILURE);
 	};
 	fprintf(stdout, "Received connection from %s\n", inet_ntoa(client.addr.sin_addr));
+
 	return client;
 }
 
@@ -33,6 +38,7 @@ int connectToServer(char* hostname, char* service)
 	int error = getaddrinfo(hostname, service, &hints, &serverAddresses);
 	if (error != 0) {
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
+		exit(EXIT_FAILURE);
 	}
 	struct addrinfo* currAddr;
 	int socketfd = -1;

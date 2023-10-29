@@ -1,25 +1,41 @@
-HTTP/1.1 302 Found
-Location: https://www.google.com/?gws_rd=ssl
-Cache-Control: private
-Content-Type: text/html; charset=UTF-8
-Content-Security-Policy-Report-Only: object-src 'none';base-uri 'self';script-src 'nonce-W-1zN8WvckVsrmXKTPTcOg' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp
-Cross-Origin-Opener-Policy: same-origin-allow-popups; report-to="gws"
-Report-To: {"group":"gws","max_age":2592000,"endpoints":[{"url":"https://csp.withgoogle.com/csp/report-to/gws/other"}]}
+HTTP/1.1 301 Moved Permanently
+Date: Sun, 29 Oct 2023 18:35:11 GMT
+Server: Apache
+Location: https://jacobsorber.com/
+Content-Length: 232
+Connection: close
+Content-Type: text/html; charset=iso-8859-1
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>301 Moved Permanently</title>
+</head><body>
+<h1>Moved Permanently</h1>
+<p>The document has moved <a href="https://jacobsorber.com/">here</a>.</p>
+</body></html>
+":"gws","max_age":2592000,"endpoints":[{"url":"https://csp.withgoogle.com/csp/report-to/gws/other"}]}
 Permissions-Policy: unload=()
 Origin-Trial: Ap+qNlnLzJDKSmEHjzM5ilaa908GuehlLqGb6ezME5lkhelj20qVzfv06zPmQ3LodoeujZuphAolrnhnPA8w4AIAAABfeyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGUuY29tOjQ0MyIsImZlYXR1cmUiOiJQZXJtaXNzaW9uc1BvbGljeVVubG9hZCIsImV4cGlyeSI6MTY4NTY2Mzk5OX0=
 Origin-Trial: AvudrjMZqL7335p1KLV2lHo1kxdMeIN0dUI15d0CPz9dovVLCcXk8OAqjho1DX4s6NbHbA/AGobuGvcZv0drGgQAAAB9eyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGUuY29tOjQ0MyIsImZlYXR1cmUiOiJCYWNrRm9yd2FyZENhY2hlTm90UmVzdG9yZWRSZWFzb25zIiwiZXhwaXJ5IjoxNjkxNTM5MTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0=
-Date: Fri, 27 Oct 2023 19:42:00 GMT
+Date: Sun, 29 Oct 2023 18:31:23 GMT
+Expires: Tue, 28 Nov 2023 18:31:23 GMT
+Cache-Control: public, max-age=2592000
 Server: gws
-Content-Length: 231
+Content-Length: 219
 X-XSS-Protection: 0
 X-Frame-Options: SAMEORIGIN
-Set-Cookie: 1P_JAR=2023-10-27-19; expires=Sun, 26-Nov-2023 19:42:00 GMT; path=/; domain=.google.com; Secure; SameSite=none
-Set-Cookie: AEC=Ackid1RAp8QCTcuoC1qHnazah40MCuSbEezRWZJQH-GI_fa_cNvlQ6zMExE; expires=Wed, 24-Apr-2024 19:42:00 GMT; path=/; domain=.google.com; Secure; HttpOnly; SameSite=lax
 Connection: close
 
 <HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
-<TITLE>302 Moved</TITLE></HEAD><BODY>
-<H1>302 Moved</H1>
+<TITLE>301 Moved</TITLE></HEAD><BODY>
+<H1>301 Moved</H1>
 The document has moved
-<A HREF="https://www.google.com/?gws_rd=ssl">here</A>.
+<A HREF="http://www.google.com/">here</A>.
 </BODY></HTML>
+ww.google.com/><span id=logo aria-label=Google></span></a>
+  <p><b>404.</b> <ins>That’s an error.</ins>
+  <p>The requested URL <code>/word</code> was not found on this server.  <ins>That’s all we know.</ins>
+/?gws_rd=ssl">here</A>.
+</BODY></HTML>
+
+

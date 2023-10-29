@@ -3,11 +3,6 @@
 
 #include <stdbool.h>
 
-enum httpMethod {
-	GET,
-	POST
-};
-
 enum httpType {
 	REQUEST,
 	RESPONSE
@@ -30,11 +25,11 @@ struct HttpHeader {
 
 struct Http {
 	char* msg;
-	enum httpMethod method;
+	char* method;
+	char* version;
+	char* path;
 	enum httpType type;
 	enum statusCode status;
-	char* path;
-	char* version;
 	struct HttpHeader* headerHead;
 };
 
@@ -44,5 +39,5 @@ char* getHeaderValue(struct Http http, char* key);
 char* buildhttpString(struct Http http);
 struct HttpHeader* getHeader(struct Http http, char* key);
 bool removeHeader(struct Http* http, char* key);
-struct HttpHeader* modifyHeaderValue(struct Http* http, char* key, char* insert);
+struct HttpHeader* modifyHeaderValue(struct Http http, char* key, char* insert);
 #endif

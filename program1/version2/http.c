@@ -20,11 +20,14 @@ struct Http http_construct(char* message)
 	struct Http http;
 	http.headerHead = NULL;
 	http.msg = strdup(message);
+	http.version = (char*)malloc(32);
+	http.method = (char*)malloc(16);
+	http.path = (char*)malloc(512);
 
 	char* savePoint;
-	char* requestLine = strtok_r(message, "\r\n", &savePoint);
+	char* requestLine = strdup(strtok_r(message, "\r\n", &savePoint));
 	char* headerLine = NULL;
-	sscanf(requestLine, "%u %s %s", &http.method, http.path, http.version);
+	sscanf(requestLine, "%s %s %s", http.method, http.path, http.version);
 	while ((headerLine = strtok_r(NULL, "\r\n", &savePoint)) != NULL) {
 		http.headerHead = http_header_construct(http, headerLine);
 		if (http.headerHead->next != NULL)
@@ -37,6 +40,16 @@ struct Http http_construct(char* message)
 
 char* buildhttpString(struct Http http)
 {
+	/*
+		 char* httpString = concat(concat(http.method, http.path), http.version);
+		 struct HttpHeader* header = NULL;
+		 for (header = http.headerHead; header != NULL; header = header->next)
+		 {
+		 char* headerText = concat(concat(header->key, header->value), "\r\n");
+		 httpString = concat(httpString, headerText);
+		 }
+		 return httpString;
+		 */
 	return NULL;
 }
 
@@ -87,7 +100,7 @@ char* getHeaderValue(struct Http http, char* key)
 	return (Header != NULL) ? strdup(Header->value) : NULL;
 }
 
-struct HttpHeader* modifyHeaderValue(struct Http* http, char* key, char* insert)
+struct HttpHeader* modifyHeaderValue(struct Http http, char* key, char* insert)
 {
 	struct HttpHeader* Header = getHeader(http, key);
 	free(Header->value);
