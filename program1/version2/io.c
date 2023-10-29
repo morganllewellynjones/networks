@@ -17,8 +17,7 @@ char* strsplit(char* string, char* delim, size_t* distance)
 	 * Distance is passed in as a save point for future string operations to know where the first delimiter was found
 	 * If distance is returned as 0 then no delimiter was found */
 	char* p = string;
-	size_t dsize = strlen(delim);
-	for (p = string; *p != '\0' && (p - string < dsize); ++p)
+	for (p = string; *p != '\0'; ++p)
 	{
 		if (*p == *delim && (strncmp(p, delim, strlen(delim)) == 0))
 		{
