@@ -2,21 +2,23 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <signal.h>
-#include <pthread.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netdb.h>
 #include <fcntl.h>
-
 #include "host.h"
-#include "http.h"
 #include "io.h"
 
-#define BUFFSIZE 1048576
+/*Author: Morgan Jones
+ * 10/29/2023
+ * This work is my own, see README for details*/
+
 
 static volatile bool sigint = false;
+static const size_t buffsize = 8192;
 
 void sigint_handle(int) {
 	fprintf(stdout, "\nsigint received!\n");
@@ -34,6 +36,7 @@ void register_sigint() {
 }
 
 short parseArgs(int argc, char** argv) {
+
 	short port = 8080;
 	int opt = -1;
 	while ((opt = getopt(argc, argv, "p:")) != -1) {
@@ -48,50 +51,31 @@ short parseArgs(int argc, char** argv) {
 	}
 	return port;
 }
-/*
-	 int pthread_create(pthread_t *restrict thread,
-	 const pthread_attr_t *restrict attr,
-	 void *(*start_routine)(void *),
-	 void *restrict arg);
-	 */
-/*
-	 void* acceptConnections(void* args)
-	 {
-	 struct server Host = *(struct server*)args;
-	 struct client Client = acceptClient(Host);
-	 char buffer[8192];
-	 memset(buffer, 0, sizeof(buffer));
-	 size_t msgLength = read(Client.fd, buffer, sizeof(buffer));
-	 fprintf(stdout, "%s\n", buffer);
-	 return (void*)0;
-	 }
-	 */
-
-/*
-	 void* fetchFile(void* args)
-	 {
-	 struct server Host = *(struct server*)args;
-	 }
-	 */
-
-struct Url
-{
-	char* full;
-	char* hostname;
-	char* path;
-};
 
 struct Url extractRequestUrl(char* request) 
 {
 	struct Url url;
-	size_t dist = 0;
+	size_t savePos = 0;
 	url.full = strextract(request, "/", " ", CROPBOTH);
 
-	/*Hostname is the section of the url up to a delimiting '/' */
-	url.hostname = strsplit(url.full, "", &dist);
+	char* https = strextract(request, "https:/", "/", NOCROP);
+	char* http = strextract(request, "http:/", "/", NOCROP);
+	char* hostname = url.full;
+
+	if (https != NULL) {
+		hostname = strextract(hostname, https, "/", NOCROP);
+	}
+	else if (http != NULL) {
+		hostname = strextract(hostname, http, "/", NOCROP);
+	}
+	else {
+		hostname = strsplit(url.full, "/", &savePos);
+	}
+
+	url.hostname = hostname;
 
 	/*If dist == 0 then strsplit found no '/' and therefore there is no path, only a hostname */
-	url.path = (dist == 0) ? strdup("") : strdup(url.full + dist + 1);
+	url.path = (savePos == 0) ? strdup("") : strdup(url.full + savePos + 1);
 
 	return url;
 }
@@ -103,14 +87,50 @@ void purgeUrl(struct Url url)
 	free(url.path);
 }
 
+int getHttpStatus(char* response)
+{
+	/*Parses an Http string for the status number in the request line
+	 * */
+
+	char* statusCode = strextract(response, " ", " ", CROPBOTH);
+	int status = (statusCode == NULL) ? 0 : atoi(statusCode);
+	free(statusCode);
+	return status;
+}
+
+char* urlStoreName(char* url)
+{
+	/* Maps a url to a name used by the caches filesystem
+	 * All cache files are stored in the cache folder
+	 * No subdirectories are made, so instead we change the '/'
+	 * to a '|' in the pathname when storing and retrieving
+	 * */
+
+	int elementCount = wordCount(url, "/") + 1;
+	char** elements = stringToArray(url, "/");
+	char* fileUrl = arrayToString(elements, "|", elementCount);
+	char path[] = "./cache/";
+	char* fullUrl[2] = {path, fileUrl};
+	char* storeName = arrayToString(fullUrl, "", 2);
+
+	free(fileUrl);
+	for (int i = 0; i < elementCount; ++i)
+	{
+		free(elements[i]);
+	}
+	free(elements);
+	return storeName;
+
+}
+
 char* prepareForwardRequest(char* request)
 {
 	/*The request made to the proxy needs to be modified for forwarding to the end server
 	 * We use a number of string functions here, some custom built in io.c, to modify the original
 	 * request to be suitable for forwarding */
 
-	/*Change connection to closed or tcp will hang*/
-	char* stage1 = strreplace(request, "Connection: keep-alive", "Connection: close");
+	/*Change connection to Closed or tcp will hang*/
+	char* stage1 = strreplace(request, "Connection: keep-alive", "Connection: Close");
 
 	/*Remove hostname from request line and move it to host header*/
 	struct Url url = extractRequestUrl(request);
@@ -139,39 +159,78 @@ int main(int argc, char** argv)
 	{
 		client = acceptClient(proxy);
 
-		/*read request from client*/
-		char buffer[8192];
+		/*Read request from client*/
+		char buffer[buffsize];
 		memset(buffer, 0, sizeof(buffer));
-		size_t bytes = read(client.fd, buffer, sizeof(buffer)-1);
+		size_t bytes = Read(client.fd, buffer, sizeof(buffer)-1);
 
 		/*client request is made to proxy, prepare request to be forwarded to end server*/
+		struct Url url = extractRequestUrl(buffer);
 		char* request = prepareForwardRequest(buffer);
-		char* serverName = strextract(request, "Host: ", "\r\n", CROPBOTH);
-		char* serverPort = "80";
+
+		/*create cache directory for future writes*/
+		int cachedir = mkdir("cache", 00777);
 
 		/*log request being forwarded for debugging*/
-		int requestfd = open("request.http", O_CREAT | O_RDWR, 0666);
-		write(requestfd, request, strlen(request));
-		close(requestfd);
+		int requestfd = Open("./cache/request.http", O_CREAT | O_RDWR, 0666);
+		Write(requestfd, request, strlen(request));
+		Close(requestfd);
 
-		/*connect socket to end server and write formatted request*/
-		int serverfd = connectToServer(serverName, serverPort);
-		bytes = write(serverfd, request, strlen(request));
+		/*check if requested file exists in our cache*/
+		char* fileUrl = urlStoreName(url.full);
+		int sourcefd = open(fileUrl, O_RDWR, 0666);
+		if (sourcefd != -1)
+		{
+			/*Read to client*/
+			writeToSocket(sourcefd, client.fd, buffer, sizeof(buffer)-1);
+			purgeUrl(url);
+			Close(sourcefd);
+			Close(client.fd);
+			Close(cachedir);
+			free(fileUrl);
+			free(request);
+			continue;
+		}
+
+		/*connect socket to end server and Write formatted request*/
+		int serverfd = connectToServer(url.hostname, "80");
+		bytes = Write(serverfd, request, strlen(request));
 
 		/*open cache file, set buffer*/
-		int cachefd = open("response.http", O_CREAT | O_RDWR, 0666);
+		int cachefd = Open(fileUrl, O_CREAT | O_WRONLY, 0666);
 		memset(buffer, 0, sizeof(buffer));
 
-		/*write server response to cache and to client simultaneously*/
-		while ((bytes = read(serverfd, buffer, sizeof(buffer) -1)) > 0)
+		/*Write server response to cache and to client simultaneously*/
+		while ((bytes = Read(serverfd, buffer, sizeof(buffer) -1)) > 0)
 		{
-			write(cachefd, buffer, bytes);
-			write(client.fd, buffer, bytes);
+			Write(cachefd, buffer, bytes);
+			Write(client.fd, buffer, bytes);
 			fprintf(stdout, "%s", buffer);
 			memset(buffer, 0, bytes);
 		}
-		close(cachefd);
-		close(serverfd);
+
+		/*Awkwardly close the fd and then reopen it
+		 * Otherwise we can only write to it and not read
+		 * */
+
+		Close(cachefd);
+		cachefd = Open(fileUrl, O_RDONLY, 0666);
+
+		bytes = Read(cachefd, buffer, sizeof(buffer) -1);
+
+		/*check status code, do not cache bad requests or file not found*/
+		int httpStatus = getHttpStatus(buffer);
+		if (httpStatus != 200) {
+			Remove(fileUrl);
+		}
+
+		Close(sourcefd);
+		Close(cachefd);
+		Close(serverfd);
+		Close(cachedir);
+		purgeUrl(url);
+		free(request);
+		free(fileUrl);
 	}
 
 	return 0;

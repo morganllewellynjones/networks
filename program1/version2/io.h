@@ -15,12 +15,20 @@ enum Crop {
 	CROPBOTH = 7,
 };
 
-char* concat_reentrant(char* string1, char* string2);
-bool cacheFile(char* filename, int fd);
-ssize_t readToBuffer(char* filename, char* buffer, size_t buffsize);
-size_t writeToSocket(char* filename, int socketfd);
+char* arrayToString(char** strings, char* delim, size_t strcount);
+int wordCount(char* string, char* word);
+char** stringToArray(char* string, char* delim);
 char* strsplit(char* string, char* delim, size_t* distance);
 char* strreplace(char* string, char* find, char* replace);
 char* strextract(char* string, char* begin, char* end, enum Crop crop);
+
+bool cacheFile(char* filename, int fd);
+size_t writeToSocket(int sourcefd, int destfd, char* buffer, size_t buffsize);
+ssize_t Read (int fd, char* buffer, size_t buffsize);
+ssize_t Write (int fd, char* buffer, size_t buffsize);
+int Open (char* pathname, int flags, mode_t mode);
+int Close (int fd);
+int Remove (char* pathname);
+void* Malloc(size_t size);
 
 #endif

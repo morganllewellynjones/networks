@@ -1,6 +1,6 @@
 GET / HTTP/1.1
-Host: word
-Connection: close
+Host: en.wikipedia.org
+Connection: Close
 sec-ch-ua: "Chromium";v="118", "Google Chrome";v="118", "Not=A?Brand";v="99"
 sec-ch-ua-mobile: ?0
 sec-ch-ua-platform: "Windows"
@@ -13,14 +13,11 @@ Sec-Fetch-User: ?1
 Sec-Fetch-Dest: document
 Accept-Encoding: gzip, deflate, br
 Accept-Language: en-US,en;q=0.9
+Cookie: akavpau_p2=1698642438~id=15c729c37977fd0c69c0ad3be818d8d1
 
- en-US,en;q=0.9
+8d8d1
 
-en-US,en;q=0.9
+438~id=15c729c37977fd0c69c0ad3be818d8d1
 
-e: en-US,en;q=0.9
-
-9
-
-q=0.9
+0c69c0ad3be818d8d1
 

@@ -7,6 +7,13 @@
 #include <netdb.h>
 #include <unistd.h>
 
+struct Url
+{
+	char* full;
+	char* hostname;
+	char* path;
+};
+
 struct Host {
 	int fd;
 	struct sockaddr_in addr;

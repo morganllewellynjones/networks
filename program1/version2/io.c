@@ -1,13 +1,63 @@
 #include "io.h"
 
-char* concat_reentrant(char* str1, char* str2)
+/*	Author: Morgan Jones
+ *	10/29/2023
+ *
+ *	I am the sole author of this work, which contains a number
+ *	of string functions which I found helpful in parsing http blocks,
+ *	and read/write wrappers and operations.
+ *	None of the string operations created here modify the original, 
+ *	they all return a duplicate. The user must cleanup the duplicate.
+ * */
+
+char* arrayToString(char** strings, char* delim, size_t strcount)
 {
-	size_t joinsize = strlen(str1) + strlen(str2) + 1;
-	char* new = (char*)malloc(joinsize);
-	new = strcat(new, str1);
-	new = strcat(new, str2);
-	new[joinsize - 1] = 0;
-	return new;
+	/* Takes and array of strings and a delimiter, and merges the strings into a single string 
+	 * joined on the delimiter */
+	size_t joinsize = 1;
+	for (int i = 0; i < strcount; ++i)
+	{
+		joinsize += strlen(strings[i]);
+		joinsize += strlen(delim);
+	}
+	char* joined = (char*)Malloc(joinsize);
+	memset(joined, 0, joinsize);
+	for (int i = 0; i < strcount; ++i)
+	{
+		if (i != 0) {
+			joined = strcat(joined, delim);
+		}
+		joined = strcat(joined, strings[i]);
+	}
+	joined[joinsize-1] = '\0';
+	return joined;
+}
+
+int wordCount(char* string, char* word)
+{
+	/*Looks through a string for every instance of a given word and returns the count */
+	int count = 0;
+	for (char* p = string; *p != '\0'; ++p)
+	{
+		if (*p == *word && strncmp(p, word, strlen(word)) == 0) {
+			++count;
+		}
+	}
+	return count;
+}
+
+char** stringToArray(char* string, char* delim)
+{
+	/* Intakes a string and splits it into an array on the delimiter */
+	int elements = wordCount(string, delim) + 1;
+	char** array = (char**)Malloc(sizeof(char*) * elements);
+	size_t distance = 0;
+	size_t delimlen = strlen(delim);
+	for (int i = 0; i < elements; ++i) {
+		array[i] = strsplit(string, delim, &distance);
+		distance += delimlen;
+	}
+	return array;
 }
 
 char* strsplit(char* string, char* delim, size_t* distance)
@@ -16,21 +66,27 @@ char* strsplit(char* string, char* delim, size_t* distance)
 	 * Function does not modify original string, it returns a duplicate, which needs to be cleaned up
 	 * Distance is passed in as a save point for future string operations to know where the first delimiter was found
 	 * If distance is returned as 0 then no delimiter was found */
-	char* p = string;
-	for (p = string; *p != '\0'; ++p)
+	if (*distance > strlen(string))
+	{
+		return string;
+	}
+	char* start = string + *distance;
+	for (char* p = start; *p != '\0'; ++p)
 	{
 		if (*p == *delim && (strncmp(p, delim, strlen(delim)) == 0))
 		{
+			char* split = strndup(start, p - start);
 			*distance = p - string;
-			return strndup(string, p - string);
+			return split;
 		}
 	}
 	/*If no delimiter found, just return a copy of the original string*/
-	return strdup(string);
+	return strdup(start);
 }
 
 char* strreplace(char* string, char* find, char* replace)
 {
+	/*Returns a duplicate string with the first instance of find switched to replace*/
 	size_t distance = 0;
 	char* beginRegion = strsplit(string, find, &distance);
 
@@ -42,7 +98,7 @@ char* strreplace(char* string, char* find, char* replace)
 
 	char* endRegion = string + distance + strlen(find);
 	size_t joinsize = strlen(beginRegion) + strlen(replace) + strlen(endRegion) + 1;
-	char* newString = (char*)malloc(joinsize);
+	char* newString = (char*)Malloc(joinsize);
 	memset(newString, 0, joinsize);
 	newString = strcat(newString, beginRegion);
 	newString = strcat(newString, replace);
@@ -53,6 +109,9 @@ char* strreplace(char* string, char* find, char* replace)
 
 char* strextract(char* string, char* begin, char* end, enum Crop crop)
 {
+	/*Finds the first instance in a string which begins with 'begin' and ends with 'end'
+	 * If the region begin-end is not found return NULL
+	 * CROP settings determine which delimiters the returned substring includes, if any */
 	char* startp = NULL;
 	char* endp = NULL;
 	for (startp = string; *startp != '\0'; ++startp)
@@ -74,58 +133,83 @@ char* strextract(char* string, char* begin, char* end, enum Crop crop)
 	return strndup(extractStart, extractEnd - extractStart);
 }
 
-bool cacheFile(char* filename, int fd)
+size_t writeToSocket(int sourcefd, int destfd, char* buffer, size_t buffsize)
 {
-	int cachefd = open(filename, O_WRONLY | O_CREAT, 0666);
-	if (cachefd < 0) {
-		perror("(failed to open cache)");
-		return false;
-	}
-
-	char buffer[4096];
-	memset(buffer, 0, sizeof(buffer));
+	/* Reads from sourcefd into a buffer, and then writes the buffer to the given dest
+	 * Can technically be used for any two files, not just sockets */
 	size_t bytes = 0;
-	while ((bytes = read(fd, buffer, sizeof(buffer)-1)) > 0)
+	size_t accum = 0;
+	while ((bytes = Read(sourcefd, buffer, buffsize)) > 0)
 	{
-		write(cachefd, buffer, bytes);
+		Write(destfd, buffer, buffsize);
+		accum += bytes;
 		memset(buffer, 0, bytes);
 	}
-	close(cachefd);
-	return true;
+	return accum;
 }
 
-ssize_t readToBuffer(char* filename, char* buffer, size_t buffsize)
+
+/*A series of io wrappers to provide built in error handling on call */
+
+int Open (char* pathname, int flags, mode_t mode)
 {
-	ssize_t bytes = 0;
-	int fd = open(filename, 0, 0666);
+	int fd = open(pathname, flags, mode);
 	if (fd < 0) {
-		perror("(failed to open disk file)");
+		perror("(opening file error)");
+		exit(EXIT_FAILURE);
 	}
-	if ((bytes = read(fd, buffer, buffsize)) < 0) {
-		perror("(failed to read to buffer)");
+	return fd;
+}
+
+ssize_t Write (int fd, char* buffer, size_t buffsize)
+{
+	ssize_t bytes = write(fd, buffer, buffsize);
+	if (bytes < 0) {
+		perror("(write to file error)");
+		exit(EXIT_FAILURE);
 	}
 	return bytes;
 }
 
-size_t writeToSocket(char* filename, int socketfd)
+ssize_t Read (int fd, char* buffer, size_t buffsize)
 {
-	int fd = open(filename, 0);
-	if (fd < 0) {
-		perror("{failed to open disk file)");
+	ssize_t bytes = read(fd, buffer, buffsize);
+	if (bytes < 0) {
+		perror("(read from file error)");
 		exit(EXIT_FAILURE);
 	}
-	char buffer[4096];
-	memset(buffer, 0, sizeof(buffer));
-	size_t bytes = 0;
-	size_t written = 0;
-	size_t accum = 0;
-	while ((bytes = read(fd, buffer, sizeof(buffer)-1)) > 0)
-	{
-		if ((written = write(socketfd, buffer, bytes)) < 0) {
-			perror("(writing to socket)");
-		}
-		memset(buffer, 0, bytes);
-		accum += written;
+	return bytes;
+}
+
+int Close (int fd)
+{
+	if (fd < 0) {
+		return 0;
 	}
-	return accum;
+	int status = close(fd);
+	if (status < 0) {
+		perror("(error closing file)");
+	}
+	return status;
+}
+
+int Remove (char* pathname)
+{
+	int status = remove(pathname);
+	if (status < 0)
+	{
+		perror("(failed to remove file)");
+		exit(EXIT_FAILURE);
+	}
+	return status;
+}
+
+void* Malloc(size_t size)
+{
+	void* memory = malloc(size);
+	if (memory == NULL) {
+		perror("(malloc failed)");
+		exit(EXIT_FAILURE);
+	}
+	return memory;
 }
