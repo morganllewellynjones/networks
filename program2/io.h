@@ -28,10 +28,6 @@ ssize_t Read (int fd, char* buffer, size_t buffsize);
 ssize_t Write (int fd, char* buffer, size_t buffsize);
 int Open (char* pathname, int flags, mode_t mode);
 int Close (int fd);
-int Socket(int domain, int type, int protocol);
-int Bind(int fd, struct sockaddr* hostaddr, size_t addrlen);
-int Listen(int fd, int backlog);
-int Connect(int fd, struct sockaddr* addr, size_t addrlen);
 int Remove (char* pathname);
 void* Malloc(size_t size);
 

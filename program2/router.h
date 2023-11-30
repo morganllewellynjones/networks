@@ -39,10 +39,9 @@ struct Packet
 struct ThreadData
 {
 	struct Router router;
-	struct Host client;
+	char* packetString;
 };
 
-bool isIPString(char* ipstring);
 unsigned int IPtoInt(char* ipstring);
 struct Packet strToPacket(char* data);
 void acceptPackets(struct Router router, struct Host interface);

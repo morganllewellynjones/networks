@@ -229,46 +229,6 @@ int Close (int fd)
 	return status;
 }
 
-int Socket(int domain, int type, int protocol)
-{
-	int fd = socket(domain, type, protocol);
-	if (fd < 0) {
-		perror("(socket create)");
-		exit(EXIT_FAILURE);
-	}
-	return fd;
-}
-
-int Bind(int fd, struct sockaddr* hostaddr, size_t addrlen)
-{
-	int status = 0;
-	if ((status = bind(fd, hostaddr, addrlen)) < 0) {
-		perror("(server bind)");
-		exit(EXIT_FAILURE);
-	}
-	return status;
-}
-
-int Listen(int fd, int backlog)
-{
-	int status = 0;
-	if ((status = listen(fd, backlog)) < 0) {
-		perror("(server listen)");
-		exit(EXIT_FAILURE);
-	}
-	return status;
-}
-
-int Connect(int fd, struct sockaddr* addr, size_t addrlen)
-{
-	int status = 0;
-	if ((status = connect(fd, addr, addrlen)) < 0) {
-		perror("(connect failed)");
-		exit(EXIT_FAILURE);
-	}
-	return status;
-}
-
 int Remove (char* pathname)
 {
 	int status = remove(pathname);

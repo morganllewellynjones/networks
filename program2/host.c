@@ -51,7 +51,7 @@ int connectToServer(char* hostname, char* service)
 	struct addrinfo* serverAddresses;
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;    /* Allow IPv4 */
-	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_socktype = SOCK_DGRAM;
 	hints.ai_flags = 0;
 	hints.ai_protocol = 0;          /* Any protocol */
 	//const short httpport = htons(30);
@@ -83,7 +83,7 @@ int connectToServer(char* hostname, char* service)
 	return socketfd;
 }
 
-int connectToLocal(short port)
+int connectToLocal(int port, int socktype)
 {  
 	struct sockaddr_in client_addr;
 	memset(&client_addr, 0, sizeof(client_addr));
@@ -91,11 +91,12 @@ int connectToLocal(short port)
 	client_addr.sin_port = htons(port);
 	client_addr.sin_addr.s_addr = INADDR_ANY;
 
-	const int client_fd = Socket(AF_INET, SOCK_STREAM, 0);
-	return Connect(client_fd, (struct sockaddr*)&client_addr, sizeof(client_addr));
+	const int client_fd = Socket(AF_INET, socktype, 0);
+	Connect(client_fd, (struct sockaddr*)&client_addr, sizeof(client_addr));
+	return client_fd;
 }
 
-struct Host initServer(short port) {
+struct Host initServer(short port, int socktype) {
 
 	/* Open a socket, bind it and set it to listen on port
 	 * Return all details in the form of a host struct
@@ -111,9 +112,51 @@ struct Host initServer(short port) {
 	host.addr = serverAddr;
 	host.addr_len = sizeof(host.addr);
 
-	host.fd = Socket(AF_INET, SOCK_STREAM, 0);
+	host.fd = Socket(AF_INET, SOCK_DGRAM, 0);
 	Bind(host.fd, (struct sockaddr*)&host.addr, host.addr_len);
-	Listen(host.fd, SOMAXCONN);
+	if (socktype == SOCK_STREAM) {
+		Listen(host.fd, SOMAXCONN);
+	}
 
 	return host;
+}
+
+int Socket(int domain, int type, int protocol)
+{
+	int fd = socket(domain, type, protocol);
+	if (fd < 0) {
+		perror("(socket create)");
+		exit(EXIT_FAILURE);
+	}
+	return fd;
+}
+
+int Bind(int fd, struct sockaddr* hostaddr, size_t addrlen)
+{
+	int status = 0;
+	if ((status = bind(fd, hostaddr, addrlen)) < 0) {
+		perror("(server bind)");
+		exit(EXIT_FAILURE);
+	}
+	return status;
+}
+
+int Listen(int fd, int backlog)
+{
+	int status = 0;
+	if ((status = listen(fd, backlog)) < 0) {
+		perror("(server listen)");
+		exit(EXIT_FAILURE);
+	}
+	return status;
+}
+
+int Connect(int fd, struct sockaddr* addr, size_t addrlen)
+{
+	int status = 0;
+	if ((status = connect(fd, addr, addrlen)) < 0) {
+		perror("(connect failed)");
+		exit(EXIT_FAILURE);
+	}
+	return status;
 }

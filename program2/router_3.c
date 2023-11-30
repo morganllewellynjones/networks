@@ -6,13 +6,10 @@
 
 int main()
 {
-	struct Host interface8003 = initServer(8003);
+	struct Host interface8003 = initServer(8003, SOCK_DGRAM);
 	struct Router router_3 = constructRouter(3, &interface8003, 1);
 
-	while (true)
-	{
-		acceptPackets(router_3, interface8003);
-	}
+	acceptPackets(router_3, interface8003);
 
 	return 0;
 }

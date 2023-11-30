@@ -6,12 +6,9 @@
 
 int main()
 {
-	struct Host interface8005 = initServer(8005);
+	struct Host interface8005 = initServer(8005, SOCK_DGRAM);
 	struct Router router_5 = constructRouter(5, &interface8005, 3);
-	while (true)
-	{
-		acceptPackets(router_5, interface8005);
-	}
+	acceptPackets(router_5, interface8005);
 
 	return 0;
 }

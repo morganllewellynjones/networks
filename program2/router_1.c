@@ -32,9 +32,8 @@ struct Packet* constructPacketsFromData(char* data, int packetCount)
 int main()
 {
 
-	struct Host interfaceA, interfaceB;
-	struct Host interfaces[2] = {interfaceA, interfaceB};
-	struct Router router_1 = constructRouter(1, interfaces, 2);
+	/*router_1 has no interfaces which read data, so we don't pass any in*/
+	struct Router router_1 = constructRouter(1, (struct Host*)NULL, 0);
 
 	char* packetData = getPacketData();
 	int packetCount = countLines(packetData);
@@ -44,13 +43,17 @@ int main()
 
 	for (int entry = 0; entry < packetCount; ++entry)
 	{
-		char* packetString = strsep(&packetData, "\n");
-		packets[entry] = strToPacket(packetString);
-		processRequest(router_1, packets + entry, packetString);
+		char* packetString = strdup(strsep(&packetData, "\n"));
+		packets[entry] = strToPacket(strdup(packetString));
+
+		/*strsep is destructive, create space to add newline character back in*/
+		packetString = realloc(packetString, strlen(packetString) + 2);
+		processRequest(router_1, packets + entry, strcat(packetString, "\n"));
+		free(packetString);
+		sleep(1);
 	}
 
 	free(packetData);
-	//int connectToServer(char* hostName, char* service);
 
 	return 0;
 }

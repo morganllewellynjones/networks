@@ -22,8 +22,12 @@ struct Host {
 };
 
 struct Host acceptClient(struct Host host);
-struct Host initServer(short port);
+struct Host initServer(short port, int socktype);
+int connectToLocal(int port, int socktype);
 int connectToServer(char* hostName, char* service);
-int connectToLocal(short port);
+int Socket(int domain, int type, int protocol);
+int Bind(int fd, struct sockaddr* hostaddr, size_t addrlen);
+int Listen(int fd, int backlog);
+int Connect(int fd, struct sockaddr* addr, size_t addrlen);
 
 #endif
