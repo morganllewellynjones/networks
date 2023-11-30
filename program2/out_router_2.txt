@@ -2,10 +2,6 @@ a
 from
 hidden
 victory
-a
-from
-hidden
-victory
 steal
 an
 with
