@@ -7,7 +7,7 @@
  *	of string functions which I found helpful in parsing http blocks,
  *	and read/write wrappers and operations.
  *	None of the string operations created here modify the original, 
- *	they all return a duplicate. The user must cleanup the duplicate.
+ *	they all return a duplicate. The user must clean up the duplicate.
  * */
 
 char* arrayToString(char** strings, char* delim, size_t strcount)
@@ -35,7 +35,7 @@ char* arrayToString(char** strings, char* delim, size_t strcount)
 
 int wordCount(char* string, char* word)
 {
-	/*Looks through a string for every instance of a given word and returns the count */
+	/* Looks through a string for every instance of a given word and returns the count */
 	int count = 0;
 	for (char* p = string; *p != '\0'; ++p)
 	{
@@ -86,11 +86,11 @@ char* strsplit(char* string, char* delim, size_t* distance)
 
 char* strreplace(char* string, char* find, char* replace)
 {
-	/*Returns a duplicate string with the first instance of find switched to replace*/
+	/* Returns a duplicate string with the first instance of find switched to replace */
 	size_t distance = 0;
 	char* beginRegion = strsplit(string, find, &distance);
 
-	/*Pattern not found, return original string*/
+	/* Pattern not found, return original string */
 	if (distance == 0)
 	{
 		return strdup(string);
@@ -149,7 +149,7 @@ size_t writeToSocket(int sourcefd, int destfd, char* buffer, size_t buffsize)
 }
 
 
-/*A series of io wrappers to provide built in error handling on call */
+/* A series of io wrappers to provide built in error handling on call */
 
 int Open (char* pathname, int flags, mode_t mode)
 {
