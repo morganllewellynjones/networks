@@ -5,11 +5,6 @@
 ### Summary
 The project objective was to build a simple web proxy server. This proxy server listens on localhost for client requests. If a specific web page is requested it checks its cache for that webpage and serves it, or (in the event that the file is not cached) it queries the appropriate server for the HTTP page to serve and then caches the file.
 
-### Development
-This project was developed in about 2 weeks of part time work. I rejected the Python skeleton code given to me for this project in favor of developing it in C. My reasoning was that a low level project should use a low-level language. I was interested in learning the nuts and bolts of web socket interaction, and thought that C would be a more suitable language for this.
-
-The tested development environment for this project is Debian 11 on WSL.
-
 ### Compilation
 Run `make` to compile down the project into an executable file. The program can be executed through the binary file proxy.
 

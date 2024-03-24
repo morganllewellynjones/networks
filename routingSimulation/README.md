@@ -10,9 +10,9 @@ The purpose of this project was to simulate a group of routers forwarding IP pac
 - discarded_by_router_#.txt -> the router_# discarded a packet whose TTL (time to live) was 0.
 
 ### Operation
-Step 1. Run 'make' to compile all files.
-Step 2. Run ./router_2, ./router_3, ./router_4, ./router_5, and ./router_6 in separate terminals.
-Step 3. Run ./router_1.
+Step 1. Run `make` to compile all binaries.
+Step 2. Run `./router_2`, `./router_3`, `./router_4`, `./router_5`, and `./router_6` in separate terminals.
+Step 3. Run `./router_1`.
 Step 4. Profit.
 
 The code should run without memory errors, except for some memory leaks. For a small program with a finite endpoint such as this it shouldn't cause any problems.
