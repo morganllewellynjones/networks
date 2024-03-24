@@ -3,11 +3,13 @@
 ## 11/30/2023
 
 ### Summary
-The purpose of this project was to simulate a group of routers forwarding IP packets through a network. The network consists of only 6 routers, and all new packets originate from router_1 before being forwarded to other routers. The project included the forwarding tables of each router. Delays are included in the forwarding process to allow the viewer to switch between router terminals during execution, and observe logging statements as the routers move traffic. These include: 
+The purpose of this project was to simulate a group of routers forwarding IP packets through a network. The network consists of only 6 routers, and all new packets originate from router_1 before being forwarded to other routers. The project included the forwarding tables of each router. Delays are included in the forwarding process to allow the viewer to switch between router terminals during execution, and observe logging statements as the routers move traffic. Additionally, logs are written to the following text files: 
 - received_by_router_#.txt -> the router_# received a packet.
 - sent_by_router_#.txt -> the router_# sent a packet.
 - out_router_#.txt -> the router_# received a packet destined for themselves.
 - discarded_by_router_#.txt -> the router_# discarded a packet whose TTL (time to live) was 0.
+
+On reflection these log files should have been written to a separate directory (not the project root), but `make clean` will take care of them nonetheless.
 
 ### Operation
 Step 1. Run `make` to compile all binaries.
